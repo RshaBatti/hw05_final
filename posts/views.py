@@ -65,6 +65,11 @@ def profile(request, username):
 def post_view(request, username, post_id):
     post = get_object_or_404(Post, author__username=username, pk=post_id)
     post_list = post.author.posts.all()
+    author = get_object_or_404(User, username=username)
+    following = Follow.objects.filter(author=author)
+    follow = following.count()
+    follower = Follow.objects.filter(user=author).count()
+    count = post_list.count()
     paginator = Paginator(post_list, 5)
     page_number = request.GET.get('page')
     form = CommentForm(instance=None)
@@ -78,7 +83,11 @@ def post_view(request, username, post_id):
                           "post": post,
                           'form': form,
                           'page': page,
-                          'paginator': paginator
+                          'paginator': paginator,
+                          'following': following,
+                          'follow': follow,
+                          'follower': follower,
+                          'count': count
                       }
                       )
     return response

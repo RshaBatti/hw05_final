@@ -19,19 +19,34 @@
                                     Пользователь: {{ user.username }}
                                 </div>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <div class="h6 text-muted">
-                                        Подписчиков: XXX <br/>
-                                        Подписан: XXX
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="h6 text-muted">
-                                        Записей: {{ count }}
-                                    </div>
-                                </li>
-                            </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <div class="h6 text-muted">
+                                    Подписчиков: {{ follow }} <br/>
+                                    Подписан: {{ follower }}
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="h6 text-muted">
+                                    Записей: {{ count }}
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                {% if following %}
+                                    <a class="btn btn-lg btn-light"
+                                       href="{% url 'profile_unfollow' author %}"
+                                       role="button">
+                                        Отписаться
+                                    </a>
+                                {% else %}
+                                    <a class="btn btn-lg btn-primary"
+                                       href="{% url 'profile_follow' author %}"
+                                       role="button">
+                                        Подписаться
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
                         </div>
                     </div>
 
