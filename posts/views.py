@@ -8,6 +8,9 @@ from django.views.decorators.cache import cache_page
 
 @cache_page(20, key_prefix='index_page')
 def index(request):
+    """
+    Возвращает все посты на главной странице
+    """
     post_list = Post.objects.all()
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
@@ -19,6 +22,9 @@ def index(request):
 
 
 def group_posts(request, slug):
+    """
+    Возвращает все посты заданной группы на главной странице
+    """
     group = get_object_or_404(Group, slug=slug)
     group_list = group.posts_group.all()
     paginator = Paginator(group_list, 10)
@@ -33,6 +39,9 @@ def group_posts(request, slug):
 
 @login_required()
 def new_post(request):
+    """
+    Создание нового поста
+    """
     form = PostForm(request.POST or None, files=request.FILES or None)
     if not form.is_valid():
         return render(request, 'new_post.html', {'form': form})
@@ -43,6 +52,9 @@ def new_post(request):
 
 
 def profile(request, username):
+    """
+    Простомотр страницы пользователя
+    """
     author = get_object_or_404(User, username=username)
     following = Follow.objects.filter(author=author)
     follow = following.count()
@@ -63,6 +75,9 @@ def profile(request, username):
 
 
 def post_view(request, username, post_id):
+    """
+    Страница простомостра отдельного поста
+    """
     post = get_object_or_404(Post, author__username=username, pk=post_id)
     post_list = post.author.posts.all()
     author = get_object_or_404(User, username=username)
@@ -95,6 +110,9 @@ def post_view(request, username, post_id):
 
 @login_required
 def post_edit(request, username, post_id):
+    """
+    Редактирование поста, пост могут редактировать только его авторы или админ
+    """
     post = get_object_or_404(Post, pk=post_id, author__username=username)
     if request.user != post.author:
         return redirect('post', username=username, post_id=post_id)
@@ -126,6 +144,9 @@ def server_error(request):
 
 @login_required
 def add_comment(request, username, post_id):
+    """
+    Страница добавления комментария
+    """
     post = get_object_or_404(Post, pk=post_id, author__username=username)
     form = CommentForm(request.POST or None)
     if form.is_valid():
@@ -138,6 +159,9 @@ def add_comment(request, username, post_id):
 
 @login_required
 def follow_index(request):
+    """
+    Страница с постами авторыв на которых подписат пользователь
+    """
     post_list = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
@@ -150,6 +174,10 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
+    """
+    Осуществление подписки на автора, подписаться дважды на одного атвора
+    нельзя, также нельзя подписаться на самого себя
+    """
     follower_user = request.user
     following_author = get_object_or_404(User, username=username)
     subscription = Follow.objects.filter(user=follower_user,
@@ -161,6 +189,9 @@ def profile_follow(request, username):
 
 @login_required
 def profile_unfollow(request, username):
+    """
+    Удаление подписки с автора
+    """
     follower_user = request.user
     following_author = get_object_or_404(User, username=username)
     subscription = Follow.objects.filter(user=follower_user,
